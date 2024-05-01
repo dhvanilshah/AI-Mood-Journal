@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, redirect, url_for
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 
@@ -22,6 +22,20 @@ class Tweet(db.Model):
     
     def map(self):
         return {'id': self.id, 'author': self.author, 'tweet': self.tweet}
+    
+class Users(db.Model):
+    __tablename__ = "Users"
+
+    id = db.Column(db.Integer, primary_key = True)
+    username = db.Column(db.Text(), nullable = False)
+    password = db.Column(db.Text(), nullable = False)
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+    
+    def map(self):
+        return {'id': self.id, 'username': self.username, 'password': self.password}
 
 @app.route('/')
 def hello():
@@ -44,6 +58,25 @@ def addMessage():
     db.session.add(tweet)
     db.session.commit()
     return jsonify(tweet.map())
+
+@app.route('/addauth', methods = ['POST'])
+def addUsers():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+
+    existing_user = Users.query.filter_by(username=username).first()
+    if existing_user:
+        return jsonify(data.map())
+    else:
+        user = Users(data['username'], data['password'])
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(user.map())
+
+@app.route('/welcome')
+def welcome():
+    return 'You Already have a page'
 
 @app.route('/delete/<id>', methods = ['DELETE'])
 def deleteMessage(id):
