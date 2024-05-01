@@ -66,7 +66,8 @@ export default class App extends React.Component {
     this.setState((prevState) => ({
       tweets: prevState.tweets.filter((twt) => twt.id != id)
     }));
-  }
+  };
+
 
   render() {
     const author = this.state.author;
@@ -74,10 +75,11 @@ export default class App extends React.Component {
     const tweets = this.state.tweets;
 
     const canSubmit =
-      author.length > 0 && tweet.length > 0 && tweet.length <= 280;
+      author.length > 0 && tweet.length > 0 && tweet.length <= 280 ;
 
     return (
       <div className="app">
+
         <div className="tweet-box">
           <input
             value={author}
