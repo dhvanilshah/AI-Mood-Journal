@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./styles.css";
+// import "../styles/styles.scss";
 
 export default class App extends React.Component {
   constructor(props) {

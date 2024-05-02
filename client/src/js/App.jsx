@@ -4,7 +4,7 @@ import Tweeter from './Tweeter';
 import Auth from './Auth';
 import Welcome from './Welcome';
 import Journals from './Journals';
-
+import Moods from './Moods';
 
 function App() {
   return (
@@ -13,6 +13,7 @@ function App() {
         <Route path="/" element={<Welcome />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/journals" element={<Journals />} />
+        <Route path="/moods" element={<Moods />} />
       </Routes>
     </BrowserRouter>
   );
