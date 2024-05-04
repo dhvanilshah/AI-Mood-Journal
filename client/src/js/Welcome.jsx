@@ -1,34 +1,40 @@
-import React from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 
 
-export default class App extends React.Component {
+function Welcome() {
+    const navigate = useNavigate();
 
-    handleSignUp = () => {
-      let navigate = useNavigate(); // Get the navigate function
-      navigate('http://localhost:5173/auth');
-      };
+    const handleSignup = () => {
+        navigate('/sign-up');
+    }
 
-    handleLogin = () => {
-    };
+    const handleLogin = () => {
+        navigate('/login');
+    }
 
 
-  render() {
-
-    return (
-      <div className="app">
+  return (
+    <div className  = "welcome-main">
         AI Mood Journal
-        <div className="tweet-box-actions">
-            <button onClick={this.handleSignUp}>
-                Sign Up
-            </button>
-            <button onClick={this.handleLogin}>
-                Login
-            </button>
+        <p> Organize your thoughts and emotions easily and effecitvly</p>
+        <div>
+            <Button variant = "primary" size = "lg" onClick={handleSignup}>
+                Sign Up!
+            </Button>
         </div>
-      </div>
-    );
-  }
+        <div>            
+            <Button variant = "primary" size = "lg" onClick = {handleLogin}>
+                Login!
+            </Button>
+
+        </div>
+    </div>
+  );
 }
+
+export default Welcome;
+
 
 
