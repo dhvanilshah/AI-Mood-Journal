@@ -46,10 +46,12 @@ class Notes(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     uuid_key = db.Column(db.Text(), nullable = False)
     note = db.Column(db.Text(), nullable = False)
-    mood_ids = db.Column(db.ARRAY(db.Integer), nullable=True)
-    topic_ids = db.Column(db.ARRAY(db.Integer), nullable=True)
 
-    def __init__(self, uuid_key, note, mood_ids, topic_ids):
+    mood = db.relationship("Moods", secondary = note_mood, backref=db.backref('notes', lazy='dynamic'))
+    topic = db.relationship('Topics', secondary = note_topic, backref=db.backref('notes', lazy='dynamic'))
+
+
+    def __init__(self, uuid_key, note):
         self.uuid_key = uuid_key
         self.note = note
     

@@ -49,7 +49,7 @@ def get_topic_ids(topic_list):
 
 df = pd.read_csv('data.csv')
 
-for index,row in df[0:3].iterrows():
+for index,row in df.iterrows():
     note = row["Answer"]
     emotions = [col.split(".")[2] for col in df.columns[1:] if row[col] and "f1" in col]
     moods = get_mood_ids(emotions)
