@@ -41,24 +41,59 @@ class Users(db.Model):
     
     def map(self):
         return {'id': self.id, 'username': self.username, 'password': self.password, 'uuid_key': self.uuid_key}
-    
+
+note_mood = db.Table(
+    'note_mood',
+    db.Column('note_id', db.ForeignKey('Notes.id')),
+    db.Column('mood_id', db.ForeignKey('Moods.id'))
+)
+
+note_topic = db.Table(
+    'note_topic',
+    db.Column('note_id', db.ForeignKey('Notes.id')),
+    db.Column('topic_id', db.ForeignKey('Topics.id'))
+)
+
 class Notes(db.Model):
     __tablename__ = "Notes"
 
     id = db.Column(db.Integer, primary_key = True)
     uuid_key = db.Column(db.Text(), nullable = False)
     note = db.Column(db.Text(), nullable = False)
-    mood = db.Column(db.Text(), nullable = False)
-    topic = db.Column(db.Text(), nullable = False)
+    mood_ids = db.Column(db.ARRAY(db.Integer), nullable=True)
+    topic_ids = db.Column(db.ARRAY(db.Integer), nullable=True)
 
-    def __init__(self, uuid_key, note, mood, topic):
+    def __init__(self, uuid_key, note, mood_ids, topic_ids):
         self.uuid_key = uuid_key
         self.note = note
+    
+    def map(self, mood, topic):
+        return {'id': self.id, 'uuid_key': self.uuid_key, 'note': self.note, 'mood': [Moods.id for mood_id in mood], 'topic': [Topics.id for topic_id in topic]}
+    
+class Moods(db.Model):
+    __tablename__ = "Moods"
+
+    id = db.Column(db.Integer, primary_key = True, )
+    mood = db.Column(db.Text(), nullable = False)
+
+    def __init__(self, mood):
         self.mood = mood
+    
+    def map(self):
+        return {'id': self.id, 'mood': self.mood}
+    
+
+class Topics(db.Model):
+    __tablename__ = "Topics"
+
+    id = db.Column(db.Integer, primary_key = True)
+    topic = db.Column(db.Text(), nullable = False)
+
+    def __init__(self, topic):
         self.topic = topic
     
     def map(self):
-        return {'id': self.id, 'uuid_key': self.uuid_key, 'note': self.note, 'mood': self.mood, 'topic': self.topic}
+        return {'id': self.id, 'topic': self.topic}
 
 @app.route('/')
 def hello():
