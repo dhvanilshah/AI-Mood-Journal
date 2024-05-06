@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 
 
-function Signup() {
+function Login() {
 
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('')
@@ -68,7 +68,7 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default Login;
 
 
 
