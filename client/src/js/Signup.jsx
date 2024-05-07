@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
-import bcrypt from 'bcryptjs'
-import { v4 as uuidv4 } from 'uuid';
 
 // Enter a username and password. Check that the username is not already in the user database
 // If not then add the user to the database 
@@ -11,8 +9,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 function Signup() {
-    const salt = bcrypt.genSaltSync(10);
-
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('')
     const navigate = useNavigate();
@@ -26,14 +22,10 @@ function Signup() {
     }
 
     const handleSubmit = () => {
-
-      var hash = bcrypt.hashSync(password, salt)
-      var uuid_key = uuidv4()
-
         fetch('/api/addauth', { 
           method: 'POST', 
           headers: { 'Content-Type': 'application/json' }, 
-          body: JSON.stringify({username: user, password: hash, uuid_key: uuid_key})
+          body: JSON.stringify({username: user, password: password})
         }).then(res => {
           return res.json();
         }).then(() => {

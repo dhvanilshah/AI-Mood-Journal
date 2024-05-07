@@ -1,12 +1,13 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Tweeter from './Tweeter';
-import Auth from './Auth';
-import Welcome from './Welcome';
-import Signup from './Signup';
-import Login from './Login';
-import Journals from './Journals';
-import Moods from './Moods';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Tweeter from "./Tweeter";
+import Auth from "./Auth";
+import Welcome from "./Welcome";
+import Signup from "./Signup";
+import Login from "./Login";
+import Journals from "./Journals";
+import Moods from "./Moods";
+import Topics from "./Topics";
 
 function App() {
   return (
@@ -19,12 +20,10 @@ function App() {
         <Route path="/auth" element={<Auth />} />
         <Route path="/journals" element={<Journals />} />
         <Route path="/moods" element={<Moods />} />
+        <Route path="/topics" element={<Topics />} />
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
-
-
-

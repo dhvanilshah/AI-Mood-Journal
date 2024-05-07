@@ -16,7 +16,7 @@ function JournalNav() {
               <Nav className="me-auto">
                 <Nav.Link href="journals">Home</Nav.Link>
                 <Nav.Link href="moods">Moods</Nav.Link>
-{/*                 <Nav.Link href="chat">Chat</Nav.Link> */}
+                <Nav.Link href="topics">Topics</Nav.Link>
               </Nav>
             </Navbar.Collapse>
           </Container>
