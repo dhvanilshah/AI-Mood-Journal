@@ -21,7 +21,7 @@ function Journals() {
     });
     const data = await res.json();
     if (data.error) {
-      alert(data.error);
+      console.log(data.error);
     } else {
       const posts = data.posts;
 
@@ -73,6 +73,7 @@ function Journals() {
       setIsEdit(false);
       setSelectedNote(null);
       fetchData();
+      window.location.reload();
     }
   };
 
@@ -89,6 +90,7 @@ function Journals() {
     if (data.note_id == selectedNote.id) {
       setSelectedNote(null);
       fetchData();
+      window.location.reload();
     }
   };
 

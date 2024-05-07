@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request, session
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-from utils import generate_uuid
+from utils import generate_uuid, hash_password
 from datetime import datetime
 from collections import defaultdict
 import openai
@@ -108,10 +108,10 @@ def hello():
 @app.route('/addauth', methods = ['POST'])
 def addUsers():
     data = request.get_json()
-    user = Users(data['username'], data['password'], generate_uuid())
+    user = Users(data['username'], hash_password(data['password']), generate_uuid())
     db.session.add(user)
     db.session.commit()
-    return jsonify(user.map())
+    return jsonify({'uuid': user.uuid_key}), 200
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -120,6 +120,9 @@ def login():
     password = data['password']
     
     user = Users.query.filter_by(username = username).first()
+
+    if not user:
+        return 'User not found.', 400
 
     if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
         return jsonify({'uuid': user.uuid_key}), 200
