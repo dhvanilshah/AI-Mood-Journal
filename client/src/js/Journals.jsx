@@ -40,7 +40,6 @@ function Journals() {
   }, []);
 
   const onNoteSelect = (note) => {
-    console.log("selected note", note);
     setSelectedNote(note);
   };
 
@@ -57,6 +56,40 @@ function Journals() {
   const onNoteChange = (e) => {
     const text = e.target.value;
     setEditText(text);
+  };
+
+  const onNoteSave = async () => {
+    const uuid = localStorage.getItem("uuid");
+    const res = await fetch("/api/new_post", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", UUID: uuid },
+      body: JSON.stringify({
+        note: editText,
+      }),
+    });
+    const data = await res.json();
+    if (data.note) {
+      setEditText(null);
+      setIsEdit(false);
+      setSelectedNote(null);
+      fetchData();
+    }
+  };
+
+  const onNoteDelete = async () => {
+    const uuid = localStorage.getItem("uuid");
+    const res = await fetch("/api/delete_post", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", UUID: uuid },
+      body: JSON.stringify({
+        note_id: selectedNote.id,
+      }),
+    });
+    const data = await res.json();
+    if (data.note_id == selectedNote.id) {
+      setSelectedNote(null);
+      fetchData();
+    }
   };
 
   return (
@@ -86,7 +119,9 @@ function Journals() {
               <Button variant="danger" className="mx-2" onClick={onCancel}>
                 Cancel
               </Button>
-              <Button variant="success">Save</Button>
+              <Button variant="success" onClick={onNoteSave}>
+                Save
+              </Button>
             </>
           )}
         </Col>
@@ -104,6 +139,7 @@ function Journals() {
             note={selectedNote}
             isEdit={isEdit}
             onNoteChange={onNoteChange}
+            onDeleteClick={onNoteDelete}
           />
         </Col>
       </Row>
