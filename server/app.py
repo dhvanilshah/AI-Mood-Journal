@@ -6,12 +6,17 @@ import bcrypt
 from utils import generate_uuid
 from datetime import datetime
 from collections import defaultdict
+import openai
 
 app = Flask(__name__)
 load_dotenv() 
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["SQLALCHEMY_DATABASE_URI"]
 db = SQLAlchemy(app)
+
+open_ai_api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = open_ai_api_key
+client = openai.OpenAI()
 
 class Users(db.Model):
     __tablename__ = "Users"
@@ -61,7 +66,7 @@ class Notes(db.Model):
         if date_written:
             self.date = date_written
         else:
-            self.date = datetime.utcnow
+            self.date = datetime.utcnow()
 
     def map(self):
         return {
@@ -137,6 +142,76 @@ def posts():
         return jsonify({'posts': res}), 200
     else:
         return jsonify({'error': 'No notes found for user'}), 401
+
+def call_open_ai(prompt, message):
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {
+                "role": "system",
+                "content": prompt
+            },
+            {
+                "role": "user",
+                "content": message
+            }
+        ],
+        temperature=0.7,
+        max_tokens=64,
+        top_p=1
+    )
+
+    return response.choices[0].message.content
+
+
+@app.route('/delete_post', methods = ['POST'])
+def delete_post():
+    data = request.get_json()
+    note_id = data['note_id']
+    note = Notes.query.get(int(note_id))
+    db.session.delete(note)
+    db.session.commit()
+    return jsonify({'note_id': note_id})
+
+@app.route('/new_post', methods=['POST'])
+def new_post():
+    user_uuid = request.headers.get('UUID')
+
+    if not user_uuid:
+        return 'User UUID not found in headers', 400
+
+    user = Users.query.filter_by(uuid_key=user_uuid).first()
+
+    data = request.get_json()
+    note = data['note']
+
+    mood_records = Moods.query.all()
+    moods = (', ').join([m.mood for m in mood_records])
+    mood_prompt = ("You will be provided with a journal entry, and your task is to classify its sentiment as one or more "
+              "of the following moods: {}."
+              "ONLY USE THE MODDS PROVIDED IN THIS PROMPT. Return the moods as a comma separated string.").format(moods)
+    ai_predicted_moods = call_open_ai(mood_prompt, note).split(',')
+    ai_predicted_moods = [s.strip() for s in ai_predicted_moods]
+    predicted_mood_records = Moods.query.filter(Moods.mood.in_(ai_predicted_moods)).all()
+
+    topic_records = Topics.query.all()
+    topics = (', ').join([t.topic for t in topic_records])
+    topics_prompt = (
+        "You will be provided with a journal entry, and your task is to classify its topic as one or more "
+        "of the following topic: {}."
+        "ONLY USE THE TOPICS PROVIDED IN THIS PROMPT. Return the moods as a comma separated string.").format(topics)
+    ai_predicted_topics = call_open_ai(topics_prompt, note).split(',')
+    ai_predicted_topics = [s.strip() for s in ai_predicted_topics]
+    predicted_topic_records = Topics.query.filter(Topics.topic.in_(ai_predicted_topics)).all()
+
+    new_note = Notes(user_id=user.id, note=note)
+    new_note.mood.extend(predicted_mood_records)
+    new_note.topic.extend(predicted_topic_records)
+
+    db.session.add(new_note)
+    db.session.commit()
+
+    return jsonify({'note': new_note.map()}), 200
 
 
 @app.route('/moods_between_dates', methods=['GET'])

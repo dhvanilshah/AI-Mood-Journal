@@ -3,8 +3,9 @@ import ReactDOM from "react-dom/client";
 
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
-function JournalEntry({ note, isEdit, onNoteChange }) {
+function JournalEntry({ note, isEdit, onNoteChange, onDeleteClick }) {
   const getDateString = (dateString) => {
     // Create a new Date object from the input date string
     const date = dateString == "" ? new Date() : new Date(dateString);
@@ -86,6 +87,9 @@ function JournalEntry({ note, isEdit, onNoteChange }) {
           Saved {reformatTimeString(note.date)}
         </Card.Subtitle>
         <Card.Text>{note.note}</Card.Text>
+        <Button variant="danger" onClick={onDeleteClick}>
+          Delete
+        </Button>
       </Card.Body>
     </Card>
   );
